@@ -1,0 +1,151 @@
+---
+title: "Data Analytics and Modelling Project"
+author: "Ibrahim Said"
+date: "12/4/2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Read the dataset and show the variables
+
+```{r}
+wine <- read.csv(file = "/datasets/winequality.csv")
+head (wine)
+```
+# Summary of the dateset for statistical view and to explore if there is any NA values
+
+```{r}
+summary(wine)
+```
+# Plot bar charts to view the distribution of Type (red = 1 and white = 2)
+
+```{r}
+barplot(table(wine$Type))
+```
+```{r}
+barplot(table(wine$quality))
+```
+# Categorizing the quality variable to new variable taste
+
+```{r}
+wine$taste <- ifelse(wine$quality < 6, 'bad', 'good')
+wine$taste[wine$quality == 6] <- 'normal'
+wine$taste <- as.factor(wine$taste)
+head (wine)
+```
+```{r}
+table(wine$taste)
+```
+# Factorized the variables that need to be categorized
+
+```{r}
+str(wine)
+```
+
+# Normalization of the data as there are differnece in the scale
+
+```{r}
+normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x)))}
+normwine <- as.data.frame(lapply(wine[0:11], normalize))
+summary(normwine$radius)
+```
+```{r}
+normwine
+```
+# Feature selection
+  # install and load the libraries
+  
+```{r}
+install.packages("mlbench")
+library(mlbench)
+install.packages("caret")
+library(caret)
+```
+# Calculate correlation matrix 
+  
+```{r}
+set.seed(7)
+correlationMatrix <- cor(normwine[,0:11])
+# summarize the correlation matrix
+print(correlationMatrix)
+# find attributes that are highly corrected (ideally >0.75)
+highlyCorrelated <- findCorrelation(correlationMatrix, cutoff=0.5)
+# print indexes of highly correlated attributes
+print(highlyCorrelated)
+```
+# Rank Features By Importance
+```{r}
+control <- trainControl(method="repeatedcv", number=10, repeats=3)
+# train the model
+model <- train(taste~., data=normwine, method="lvq", preProcess="scale", trControl=control)
+# estimate variable importance
+importance <- varImp(model, scale=FALSE)
+# summarize importance
+print(importance)
+# plot importance
+plot(importance)
+```
+
+
+# Model to check from here
+
+```{r}
+set.seed(123)
+samp <- sample(nrow(wine), 0.6 * nrow(wine))
+train <- wine[samp, ]
+test <- wine[-samp, ]
+
+```
+
+
+
+
+```{r}
+library(randomForest)
+model <- randomForest(taste ~ . - quality, data = train)
+```
+
+
+
+
+
+```{r}
+model
+```
+
+
+
+
+
+```{r}
+pred <- predict(model, newdata = test)
+table(pred, test$taste)
+```
+
+
+
+
+
+
+```{r}
+(482 + 252 + 667) / nrow(test)
+```
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+```{r}
+
+```
