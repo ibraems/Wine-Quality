@@ -1,13 +1,3 @@
----
-title: "Data Analytics and Modelling Project"
-author: "Ibrahim Said"
-date: "12/4/2018"
-output: word_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 # Read the dataset and show the variables
 
 ```{r}
@@ -87,8 +77,6 @@ print(importance)
 # plot importance
 plot(importance)
 ```
-
-
 # Model to check from here
 
 ```{r}
@@ -98,54 +86,17 @@ train <- wine[samp, ]
 test <- wine[-samp, ]
 
 ```
-
-
-
-
 ```{r}
 library(randomForest)
 model <- randomForest(taste ~ . - quality, data = train)
 ```
-
-
-
-
-
 ```{r}
 model
 ```
-
-
-
-
-
 ```{r}
 pred <- predict(model, newdata = test)
 table(pred, test$taste)
 ```
-
-
-
-
-
-
 ```{r}
 (482 + 252 + 667) / nrow(test)
-```
-
-
-
-
-
-
-```{r}
-
-```
-
-
-
-
-
-```{r}
-
 ```
